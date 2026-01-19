@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app_net
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress_app
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_NAME: wordpress_db
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_pass
+    volumes:
+      - wp_data:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - app_net
+
+  orangehrm:
+    image: orangehrm/orangehrm
+    container_name: orangehrm_app
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      ORANGEHRM_DATABASE_HOST: mysql
+      ORANGEHRM_DATABASE_PORT: 3306
+      ORANGEHRM_DATABASE_NAME: orangehrm_db
+      ORANGEHRM_DATABASE_USER: orange_user
+      ORANGEHRM_DATABASE_PASSWORD: orange_pass
+    volumes:
+      - orangehrm_data:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - app_net
+
+volumes:
+  mysql_data:
+  wp_data:
+  orangehrm_data:
+
+networks:
+  app_net:
+

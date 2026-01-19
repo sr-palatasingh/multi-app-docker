@@ -9,3 +9,4 @@ GRANT ALL PRIVILEGES ON orangehrm_db.* TO 'orange_user'@'%';
 
 FLUSH PRIVILEGES;
 
+
